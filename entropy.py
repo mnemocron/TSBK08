@@ -10,6 +10,23 @@ Created on Thu Jan 20 17:38:19 2022
 
 import math
 import sys
+import time
+import numpy as np
+from scipy.stats import entropy
+
+def get_entropy(filename, k):
+    with open(filename, 'rb') as f:
+        data = np.fromfile(f, np.dtype('B'))
+    p = np.zeros([256, 1])
+    for e in data:
+        p[e] += 1
+    p = p/len(data)
+    H = 0
+    for pp in p:
+        if pp>0:
+            H += pp * np.log2(pp)
+    H = -H
+    return H[0]
 
 def entropy_estimation(filename, k):
     cnt = 0       # total byte length
@@ -107,6 +124,7 @@ def file_length(filename):
 def main():
     filename = './infiles/cantrbry/xargs.1' # default for debuging
     # filename = './infiles/cantrbry/ptt5' # default for debuging
+    # filename = './infiles/ab.txt'
     if(len(sys.argv) > 1):
         filename = sys.argv[1] # use first command line argument as file
     
@@ -115,15 +133,21 @@ def main():
     print(f'Length:\t{L:2}')
     
     print('Memory (k)\t\tEntropy H(Xn,...,Xn+k)\t\tEntropy H(Xn+k|Xn,...Xn+k-1)\tMax compression')
+    H = get_entropy(filename, 1)
+    print(f'{H}')
     
+    """
     for k in range(4):
         H1 = entropy_estimation(filename, k)
         H2 = conditional_entropy_estimation(filename, k, 1)
+        if(H2 < 0.000001):
+            H2 = H1
         R1 = H1/8
         R2 = H2/8
         R = min(R1, R2)
-        print(f'{k}\t\t\t\t{H1:.5}\t\t\t\t\t\t{H2:.5}\t\t\t\t\t\t\t{R:.4}')
+        print(f'{k}\t\t\t\t{H1:.6}\t\t\t\t\t\t{H2:.6}\t\t\t\t\t\t\t{R:.6}')
         # print(f'{k} \t\t {H:7.6}', end = '')
+    """
 
 if __name__ == "__main__":
     main()
