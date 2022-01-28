@@ -14,10 +14,42 @@ import time
 import numpy as np
 from scipy.stats import entropy
 
+# conditional entropy:
+# H(X|Y)  = H(X) - H(X,Y)
+# H(c|ab) = H(c) - H(abc)
+
 def get_entropy(filename, k):
     with open(filename, 'rb') as f:
         data = np.fromfile(f, np.dtype('B'))
-    p = np.zeros([256, 1])
+    if(k==0):
+        p = np.zeros([256, 1])
+    if(k==1):
+        p = np.zeros([256, 256])
+    if(k==2):
+        p = np.zeros([256, 256, 256])
+    for i in range(len(data)-k):
+        if(k==0):
+            p[data[i]] += 1
+        if(k==1):
+            p[data[i]][data[i+1]] += 1
+        if(k==2):
+            p[data[i]][data[i+1]][data[i+2]] += 1
+        if(k==3):
+            p[data[i]][data[i+1]][data[i+2]][data[i+4]] += 1
+    
+    p = p/len(data)
+    H = 0
+    for pp in p:
+        if pp>0:
+            H += pp * np.log2(pp)
+    H = -H
+    return H[0]
+
+"""
+def get_entropy(filename, k):
+    with open(filename, 'rb') as f:
+        data = np.fromfile(f, np.dtype('B'))
+    p = np.zeros([256, k+1])
     for e in data:
         p[e] += 1
     p = p/len(data)
@@ -27,6 +59,7 @@ def get_entropy(filename, k):
             H += pp * np.log2(pp)
     H = -H
     return H[0]
+"""
 
 def entropy_estimation(filename, k):
     cnt = 0       # total byte length
@@ -133,8 +166,8 @@ def main():
     print(f'Length:\t{L:2}')
     
     print('Memory (k)\t\tEntropy H(Xn,...,Xn+k)\t\tEntropy H(Xn+k|Xn,...Xn+k-1)\tMax compression')
-    H = get_entropy(filename, 1)
-    print(f'{H}')
+    H = get_entropy(filename, 2)
+    print(f'{H:.6}')
     
     """
     for k in range(4):

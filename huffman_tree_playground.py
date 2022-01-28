@@ -1,25 +1,41 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jan 27 08:30:20 2022
+Created on Fri Jan 28 13:43:17 2022
 
 @author: simon
-
-hardcoded code:
-a = 0    0
-b = 10   2
-c = 110  6
-d = 111  7
-
-the following will compress and decompress a given sequence
 """
 
 import numpy as np
 
 original = 'aabacabadabaabacacaba'
 filename = './infiles/abcd.txt'
+filename = './infiles/cantrbry/alice29.txt'
 with open(filename, 'rb') as f:
     data = np.fromfile(f, np.dtype('B'))
 
+p = np.zeros([256, 1])
+for e in data:
+    p[e] += 1
+p = p/len(data) # probabilities
+
+H = 0
+for pp in p:
+    if pp>0:
+        H += pp * np.log2(pp)
+H = -H
+lmax = np.ceil(H+1)[0]
+print(f'maximum codeword length: {lmax}')
+
+syms = [i for i, x in enumerate(p) if x>0]
+N = len(syms)
+
+arr = np.array( [[b[0],i] for i,b in enumerate(p) if b>0])
+arr = arr[ np.argsort(arr[:,0]) ]
+
+#%% 
+# todo: construct tree from probabilities
+
+#%%
 tree_enc = np.zeros([256], dtype=np.uint8) * np.NaN
 tree_dec = np.zeros([256], dtype=np.uint8) * np.NaN
 
