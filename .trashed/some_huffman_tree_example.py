@@ -3,12 +3,25 @@
 Created on Tue Jan 25 13:06:35 2022
 
 @author: simon
+
+
+https://www.programiz.com/dsa/huffman-coding
 """
 
 # Huffman Coding in python
 
+import numpy as np
+
 string = 'BCAADDDCCACACAC'
 
+filename = './infiles/abcd.txt'
+filename = './infiles/cantrbry/alice29.txt'
+
+
+with open(filename, 'rb') as f:
+    data = np.fromfile(f, np.dtype('B'))
+
+string = (data)
 
 # Creating tree nodes
 class NodeTree(object):
@@ -29,7 +42,7 @@ class NodeTree(object):
 
 # Main function implementing huffman coding
 def huffman_code_tree(node, left=True, binString=''):
-    if type(node) is str:
+    if type(node) is np.uint8:
         return {node: binString}
     (l, r) = node.children()
     d = dict()
@@ -65,7 +78,11 @@ print(' Char | Huffman code ')
 print('----------------------')
 for (char, frequency) in freq:
     print(' %-4r |%12s' % (char, huffmanCode[char]))
-    
-    
-    
+
+#%%
+out = []
+for p in string:
+    out += huffmanCode[p]    
+
+
     

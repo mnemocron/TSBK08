@@ -12,6 +12,32 @@ filename = './infiles/large/bible.txt'
 k = 0
 with open(filename, 'rb') as f:
     data = np.fromfile(f, np.dtype('B'))
+    
+cnt = np.zeros([pow(256,k+1), 1])
+for i in range(len(data)-k-1):
+    dd = data[i+k]
+    for kk in range(k):
+        dd += data[i+k-kk-1] * pow(256,kk+1)
+    cnt[dd] += 1
+cnt /= len(data)
+H = 0
+for p in cnt:
+    if p>0:
+        H += p * np.log2(p)
+print(-H)
+
+#%%
+data = [1,2,3,4,5,6,7,8,9]
+k = 2
+cnt = np.zeros([pow(256,k+1), 1])
+for i in range(len(data)-k-1):
+    dd = data[i+k]
+    for kk in range(k):
+        dd += data[i+k-kk-1] * pow(256,kk+1)
+    cnt[dd] += 1
+    
+
+#%%
 if(k==0):
     p = np.zeros([256, 1])
 if(k==1):

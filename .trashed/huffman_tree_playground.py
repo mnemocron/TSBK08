@@ -32,9 +32,6 @@ N = len(syms)
 arr = np.array( [[b[0],i] for i,b in enumerate(p) if b>0])
 arr = arr[ np.argsort(arr[:,0]) ]
 
-#%% 
-# todo: construct tree from probabilities
-
 #%%
 tree_enc = np.zeros([256], dtype=np.uint8) * np.NaN
 tree_dec = np.zeros([256], dtype=np.uint8) * np.NaN

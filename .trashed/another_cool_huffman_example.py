@@ -1,32 +1,24 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Feb  1 14:23:56 2022
+Created on Mon Jan 31 13:45:31 2022
 
 @author: simon
-Tree building and Hufman encoding is based on:
+
+
 https://github.com/YCAyca/Data-Structures-and-Algorithms-with-Python/blob/main/Huffman_Encoding/huffman.py
 """
-
-import os
-import sys
-import numpy as np
-import pickle
 
 # A Huffman Tree Node
 class Node:
     def __init__(self, prob, symbol, left=None, right=None):
         # probability of symbol
         self.prob = prob
-
         # symbol 
         self.symbol = symbol
-
         # left node
         self.left = left
-
         # right node
         self.right = right
-
         # tree direction (0/1)
         self.code = ''
 
@@ -36,15 +28,12 @@ codes = dict()
 def Calculate_Codes(node, val=''):
     # huffman code for current node
     newVal = val + str(node.code)
-
     if(node.left):
         Calculate_Codes(node.left, newVal)
     if(node.right):
         Calculate_Codes(node.right, newVal)
-
     if(not node.left and not node.right):
         codes[node.symbol] = newVal
-         
     return codes        
 
 """ A helper function to calculate the probabilities of symbols in given data"""
@@ -63,7 +52,6 @@ def Output_Encoded(data, coding):
     for c in data:
       #  print(coding[c], end = '')
         encoding_output.append(coding[c])
-        
     string = ''.join([str(item) for item in encoding_output])    
     return string
         
@@ -76,43 +64,36 @@ def Total_Gain(data, coding):
         count = data.count(symbol)
         after_compression += count * len(coding[symbol]) #calculate how many bit is required for that symbol in total
     print("Space usage before compression (in bits):", before_compression)    
-    print("Space usage after compression (in bits):",  after_compression)           
+    print("Space usage after compression (in bits):",  after_compression)   
+    print(f'Ratio: {after_compression/before_compression}')        
 
 def Huffman_Encoding(data):
     symbol_with_probs = Calculate_Probability(data)
     symbols = symbol_with_probs.keys()
     probabilities = symbol_with_probs.values()
-    # print("symbols: ", symbols)
-    # print("probabilities: ", probabilities)
-    
+    print("symbols: ", symbols)
+    print("probabilities: ", probabilities)
     nodes = []
-    
     # converting symbols and probabilities into huffman tree nodes
     for symbol in symbols:
         nodes.append(Node(symbol_with_probs.get(symbol), symbol))
-    
     while len(nodes) > 1:
         # sort all the nodes in ascending order based on their probability
         nodes = sorted(nodes, key=lambda x: x.prob)
         # for node in nodes:  
         #      print(node.symbol, node.prob)
-    
         # pick 2 smallest nodes
         right = nodes[0]
         left = nodes[1]
-    
         left.code = 0
         right.code = 1
-    
         # combine the 2 smallest nodes to create new node
         newNode = Node(left.prob+right.prob, left.symbol+right.symbol, left, right)
-    
         nodes.remove(left)
         nodes.remove(right)
         nodes.append(newNode)
-            
     huffman_encoding = Calculate_Codes(nodes[0])
-    # print("symbols with codes", huffman_encoding)
+    print("symbols with codes", huffman_encoding)
     Total_Gain(data, huffman_encoding)
     encoded_output = Output_Encoded(data,huffman_encoding)
     return encoded_output, nodes[0]  
@@ -129,10 +110,82 @@ def Huffman_Decoding(encoded_data, huffman_tree):
         try:
             if huffman_tree.left.symbol == None and huffman_tree.right.symbol == None:
                 pass
-        # this is ugly. because exeptions are thrown in a regular program flow
         except AttributeError:
-            decoded_output.append( chr(huffman_tree.symbol) )
+            decoded_output.append(huffman_tree.symbol)
             huffman_tree = tree_head
-        
     string = ''.join([str(item) for item in decoded_output])
-    return string        
+    return string
+
+
+""" First Test """
+data = "AAAAAAABCCCCCCDDEEEEE"
+#print(data)
+encoding, tree = Huffman_Encoding(data)
+#print("Encoded output", encoding)
+#print("Decoded Output", Huffman_Decoding(encoding,tree))
+
+
+""" Second Test """
+#%%
+filename = './infiles/cantrbry/alice29.txt'
+f = open(filename, "r")
+
+data = f.read()
+# print(data)
+encoding, tree = Huffman_Encoding(data)
+
+# next step: encode into binary file
+# preamble: number of bits in file OOOORRR number of bytes to recover from file (and ignore trailing bits)
+# tree information
+# data
+N = len(data)
+L = len(encoding)
+while len(encoding)%8 != 0:
+    encoding += '0'
+    print('b')
+
+#%%
+import numpy as np
+
+# write to file
+binar = np.zeros([np.ceil(L/8).astype(np.uint32), 1], dtype=np.uint8)
+for i in range(len(binar)):
+    ff = encoding[0+i : 8+i]
+    mybyte = 0
+    for j in range(8):
+        if ff[7-j] == '1':
+            mybyte += pow(2,j)
+    binar[i] = mybyte
+
+# todo: write binar to file
+
+#%%
+
+dumpster = {}
+dumpster['tree'] = tree
+dumpster['bin'] = binar
+dumpster['N'] = N
+dumpster['L'] = L
+
+import pickle
+
+outfile = './outfile.bro'
+pickle.dump(dumpster, open( outfile, 'wb' ))
+
+import os
+siz1 = os.path.getsize(outfile)
+print(siz1)
+siz2 = os.path.getsize(filename)
+print(siz2)
+print(f'Actual File Compression Ratio: {siz1/siz2}')
+
+
+#%%
+# clear workspace
+import pickle
+
+outfile = './outfile.bro'
+dumpster = pickle.load(open( outfile, 'rb' ))
+tree = dumpster['tree']
+
+
