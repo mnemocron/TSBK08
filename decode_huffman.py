@@ -30,7 +30,7 @@ def decode_huffman(filename, outfile):
 
     decode = Huffman_Decoding(encode,tree)
 
-    with open(outfile, 'w') as text_file:
+    with open(outfile, 'wb') as text_file:
         text_file.write(decode)
 
 def main():
@@ -44,8 +44,8 @@ def main():
         outfile = filename + '.txt'
     
     print(f'File:\t{filename.split("/")[-1]}')
-    L = os.path.getsize(filename)
-    print(f'Length:\t{L:2}')
+    #L = os.path.getsize(filename)
+    #print(f'Length:\t{L:2}')
     decode_huffman(filename, outfile)
 
 if __name__ == "__main__":

@@ -54,8 +54,8 @@ def encode_huffman(filename, outfile):
     print(f'Actual file compression ratio: {siz1/siz2:.7}')
 
 def main():
-    # filename = './infiles/cantrbry/alice29.txt' # default for debuging (text file)
-    filename = './infiles/cantrbry/ptt5' # default for debuging (binary file)
+    filename = './infiles/cantrbry/alice29.txt' # default for debuging (text file)
+    # filename = './infiles/cantrbry/ptt5' # default for debuging (binary file)
     if(len(sys.argv) > 1):
         filename = sys.argv[1] # use first command line argument as file
     # outfile = filename.split('.')[0:-1] + '.bro'
