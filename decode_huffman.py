@@ -29,6 +29,9 @@ def decode_huffman(filename, outfile):
             encode += str(b)
 
     decode = Huffman_Decoding(encode,tree)
+    # there is some issue with the length when decoding binary files
+    # 1 byte too much is already wrong. truncate to the expected length N
+    decode = decode[0:N]  
 
     with open(outfile, 'wb') as text_file:
         text_file.write(decode)
