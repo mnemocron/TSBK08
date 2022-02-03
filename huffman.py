@@ -117,7 +117,6 @@ def Huffman_Encoding(data):
     encoded_output = Output_Encoded(data,huffman_encoding)
     return encoded_output, nodes[0]  
     
-# @todo, change to binary
 # @todo, fix ugly exceptions
 def Huffman_Decoding(encoded_data, huffman_tree):
     tree_head = huffman_tree
@@ -127,11 +126,14 @@ def Huffman_Decoding(encoded_data, huffman_tree):
             huffman_tree = huffman_tree.right   
         elif x == '0':
             huffman_tree = huffman_tree.left
-        try:
-            if huffman_tree.left.symbol == None and huffman_tree.right.symbol == None:
-                pass
+        if( (huffman_tree.left is None) and (huffman_tree.right is None) ):
+        #try:
+        #    if huffman_tree.left.symbol == None and huffman_tree.right.symbol == None:
+        #        pass
         # this is ugly. because exeptions are thrown in a regular program flow
-        except AttributeError:
+        #except AttributeError:
+        #    print(huffman_tree.left)
+        #    print(huffman_tree.right)
             #decoded_output.append( chr(huffman_tree.symbol) )
             # @todo: is there a more efficient way?
             decoded_output = np.append(decoded_output, np.uint8(huffman_tree.symbol) )
