@@ -13,7 +13,7 @@ data = read_file(filename[0])
 
 datasize = len(data)
 
-list = [(None, 0)]
+list = [(0, None)]
 index = 0   # index for data
 nextsymbol = False
 symbol_match_index = 0 #empty symbol
@@ -57,13 +57,20 @@ while run:
 
             # match => look deeper
             j = list[j][0] # index of byte in list
-
-            # if j is 0 or None then that is the end of symbol chain
-            if j == 0 or j == None:
-                list.append()
-
             compare_byte = list[j][1] # iterate deeper in element in list
+
+            if(compare_byte == None): # there is nothing deeper down
+                # Here! One match has been found but that match has nothing deeper down
+                # Some other elements in list might get more matches
+                # But if this is the best longest match then add a new symbol with latest byte
+                # and add reference to the longest match and update index accordingly.
+
+                # write that code
+
+                break
             print("look depper")
+            number_of_bytes_in_data_to_compare_with += 1
+            
         
     # Symbol does not exist in list => add new symbol
     list.append((0, data[index]))
