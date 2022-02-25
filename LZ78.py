@@ -45,48 +45,69 @@ while run:
 
     ### Actual coding and looking for symbols in list starts here
 
-    # look if symbol already exists until the longest match_length + new symbol is found
-    for i in range(len(list)): # look through whole lists
+    data_byte = data[index] # current byte from data to code
 
-        # What bytes to compare with and how many symbols the match should be (first time match_length=1)
-        # match_lenth gets longer as longer matches are found
-        list_byte = list[i][1]
-        for nr_bytes in range(match_length):
+    longest_match = 0 # variable to remember the longest match
+    longest_match_index = 0 # variable to remember the index of longest match
+
+    # look if data_byta already exists in list
+    for i in range(len(list)):
+
+        # list_byte must be the deepest down in the list when comparing
+        # Ex: (0,a),(0,b),(1,a) which is abba
+        # but when reading list[2][1] is will give "a" but list[2][1] is actually ba
+        list_byte = None
+        j = i
+        while(list[j][1] != None):
+            j = list[j][0]
+        
+        list_byte = list[j][1] # first byte of byte chain in list
+
+        if(list_byte == data_byte):
+            ### Match!!!
+
+            # Need to look at the deepest byte ex: (1,b) need to look at byte at 1 before b and so on until None is the byte
+
+            # add first match to start of byte_chain
+            byte_chain = []
+            byte_chain.insert(0,(i,data_byte))
+
+            # gets the whole byte chain from the element in list
+            k = list[i][0]
+            deeper_byte = list[k][1]
+
+            current_longest_match_index = 0 # reference to (0, None)
+
+            while deeper_byte != None:
+                byte_chain.insert(0,(k,deeper_byte)) # need to store index for later use
+                k = list[k][0]
+                deeper_byte = list[k][1]
             
-            data_byte = data[index+nr_bytes] # step through data to find longer matches
+            # byte_chain is now a list with the whole byte chain stored in list ex: [a,b,b,a,a]
+            print("Byte chain: ", byte_chain)
 
-            if(list_byte != data_byte):
-                # no match => compare with next symbol in list
-                break
+            # Now we need to calculate how long the match is for this element in the list with the data
+            currentmatch = 0
+            for i in range(len(byte_chain)):
+                if byte_chain[i][1] == data[index+i]:
+                    currentmatch += 1
+                    longest_match_index = byte_chain[i][0]
 
-            # match found => look deeper
-            while list_byte != None:
-                # match found => look deeper, need to look for longer matches
-                j = list[i][0] # index the mathed byte's pointed byte
-                list_byte = list[j][1] # set list_byte to byte pointed to
-
-                # Now we need to see if list_byte match with the next byte in data
+            if currentmatch > longest_match:
+                longest_match = currentmatch
             
-            
-            match_length += 1
+            print("Byte chain from list: ", byte_chain)
 
-            if(list_byte == None): # there is nothing deeper down
-                # Here! One match has been found but that match has nothing deeper down
-                # Some other elements in list might get more matches
-                # But if this is the best longest match then add a new symbol with latest byte
-                # and add reference to the longest match and update index accordingly.
-
-                # write that code
-
-                break
-
-            # Here one match is found but we need to look if there are longer matches
-            match_length += 1
-            print("look depper")
-            
-    # Symbol does not exist in list => add new symbol
-    list.append((0, data[index]))
-    match_length = 1 # restore match_length
-    index += 1 # code next byte in data
+        # no match => compare with next symbol in list
+    
+    # More than one symbol already exists in list
+    if longest_match > 0:
+        list.append((longest_match_index, data[index + longest_match]))
+        index += 1 + longest_match
+    else:
+        # Symbol does not exist in list => add new symbol
+        list.append((0, data[index]))
+        match_length = 1 # restore match_length
+        index += 1 # code next byte in data
 
 print("Code:\n", list)
