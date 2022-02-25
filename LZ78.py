@@ -19,7 +19,7 @@ nextsymbol = False
 symbol_match_index = 0 #empty symbol
 run = True
 
-number_of_bytes_in_data_to_compare_with = 1 # symbol chain from data
+match_length = 1 # symbol chain from data
 data_to_compare_with = 0 # how many bytes in data to compare with list
 
 
@@ -40,26 +40,37 @@ while run:
         list.append((symbol_match_index, data[index-1]))
         print("added new symbol: ", (symbol_match_index, data[index-1]), "\n")
         break
+    print("Coding byte ", index, " , with data: ", data[index], "\n")
 
-    print("byte to code: ", data[index])
 
-    # look if symbol already exists until a symbol
-    # that doesen't already exists is found
+    ### Actual coding and looking for symbols in list starts here
+
+    # look if symbol already exists until the longest match_length + new symbol is found
     for i in range(len(list)): # look through whole lists
 
-        # How many bytes to compare with
-        j = i
-        compare_byte = list[j][1]
-        for nr_bytes in range(number_of_bytes_in_data_to_compare_with):
-            if(data[index+nr_bytes] != compare_byte):
-                # no match => next step in list
+        # What bytes to compare with and how many symbols the match should be (first time match_length=1)
+        # match_lenth gets longer as longer matches are found
+        list_byte = list[i][1]
+        for nr_bytes in range(match_length):
+            
+            data_byte = data[index+nr_bytes] # step through data to find longer matches
+
+            if(list_byte != data_byte):
+                # no match => compare with next symbol in list
                 break
 
-            # match => look deeper
-            j = list[j][0] # index of byte in list
-            compare_byte = list[j][1] # iterate deeper in element in list
+            # match found => look deeper
+            while list_byte != None:
+                # match found => look deeper, need to look for longer matches
+                j = list[i][0] # index the mathed byte's pointed byte
+                list_byte = list[j][1] # set list_byte to byte pointed to
 
-            if(compare_byte == None): # there is nothing deeper down
+                # Now we need to see if list_byte match with the next byte in data
+            
+            
+            match_length += 1
+
+            if(list_byte == None): # there is nothing deeper down
                 # Here! One match has been found but that match has nothing deeper down
                 # Some other elements in list might get more matches
                 # But if this is the best longest match then add a new symbol with latest byte
@@ -68,12 +79,14 @@ while run:
                 # write that code
 
                 break
+
+            # Here one match is found but we need to look if there are longer matches
+            match_length += 1
             print("look depper")
-            number_of_bytes_in_data_to_compare_with += 1
             
-        
     # Symbol does not exist in list => add new symbol
     list.append((0, data[index]))
+    match_length = 1 # restore match_length
     index += 1 # code next byte in data
 
 print("Code:\n", list)
