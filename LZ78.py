@@ -59,7 +59,10 @@ while run:
         list_byte = None
         j = i
         while(list[j][1] != None):
+            if list[list[j][0]][1] == None: # get byte before None byte
+                break
             j = list[j][0]
+
         
         list_byte = list[j][1] # first byte of byte chain in list
 
