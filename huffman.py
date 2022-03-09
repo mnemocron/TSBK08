@@ -36,7 +36,6 @@ def create_huffmantree(filename):
             symbollist[i] = Leaf(format(i, "008b"), symbollist[i]/l)
 
     # Sort probability list
-
     def probability(node):
         return node.probability
 
@@ -45,7 +44,6 @@ def create_huffmantree(filename):
     symbol_prob_list.sort(key=probability)
 
     # Create huffman tree
-
     while len(symbol_prob_list) > 1:
 
         # Take two symbols with least probability (beginning of list because sorted)
@@ -113,7 +111,6 @@ class Leaf:
         # Set code in list with Leaves
         symbollist[int(self.symbol, 2)].code = self.code
 
-
 def code_huffman(symbollist, filename):
     code = ""
     with open(filename, "rb") as f:  # 'rb' means read binary
@@ -123,17 +120,7 @@ def code_huffman(symbollist, filename):
             code += symbollist[i].code
     return code
 
-
-def decode_huffman(huffmantree):
-    decoded = ""
-    global code
-    while code:
-        symbol = huffmantree.get_symbol()
-        decoded += symbol
-    return decoded
-
-
-def new_decode_huffman(huffmantree, code):
+def decode_huffman(huffmantree, code):
     decoded = np.array([], dtype=np.uint8)
     root = huffmantree
     for char in code:
@@ -152,7 +139,6 @@ def new_decode_huffman(huffmantree, code):
     #decoded = root.symbol
     return decoded
 
-
 def decode_binary_string(s, amount):
     return ''.join(chr(int(s[i*8:i*8+8], 2)) for i in range(amount))
 
@@ -163,19 +149,20 @@ def md5(fname):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
 
+### COMPRESS USING HUFFMAN ####################################################
 outfile = './temp.huf'
 decompfile = './decomp.dat'
-filename = smallfilenames[0]
-filename = "cantrbry/ptt5"
+filename = smallfilenames[1]
+#filename = "cantrbry/ptt5"
 print(f"Compress file: {filename.split('/')[1]} --> {outfile}", end='')
 
 symbollist = [0]*256  # declare list with length 256 (2^8)
 
-# print("Creating huffman tree!")
 tic = time.time()
 huffmantree, symbbollist = create_huffmantree(filename)
 code = code_huffman(symbollist, filename)
-# write to file
+
+### WRITE TO FILE #############################################################
 N = os.path.getsize(filename) # length of original data (bytes)
 L = len(code)                 # length of encoded data (bits)
 
@@ -204,25 +191,27 @@ print(f" in {(toc-tic):.3} seconds!")
 #print(f"Filesize {(len(code)/8)} bytes!")
 print(f"Ratio: {os.path.getsize(outfile)/os.path.getsize(filename):.4}")
 
+### DECOMPRESS THE FILE #######################################################
 print(f"Decompress file: {outfile} --> {decompfile}", end= '')
 tic = time.time()
 dumpster = pickle.load(open( outfile, 'rb' ))
 binar = dumpster["bin"]
 # inflate binary back into string of 1 and 0
-code = ''
+
+coded = ''
 for byte in binar:
     bb = np.unpackbits(byte)
     for b in bb:
-        code += str(b)
+        coded += str(b)
 huffmantree = dumpster["tree"]
 L = dumpster["L"]
 N = dumpster["N"]
-code = code[0:L]
-decoded = new_decode_huffman(huffmantree, code)
+#coded = coded[0:L]
+
+decoded = decode_huffman(huffmantree, coded)
 toc = time.time()
 # there is some issue with the length when decoding binary files
 # 1 byte too much is already wrong. truncate to the expected length N
-
 decoded = decoded[0:N]  
 with open(decompfile, 'wb') as f:
     f.write(decoded)
@@ -238,3 +227,7 @@ else:
 #characters = 100
 #print(f"First {characters} characters: "  + decoded[0:characters])
 #print("\nFirst " + str(characters) + " characters: "  + decode_binary_string(decoded, 100))
+
+
+    
+
