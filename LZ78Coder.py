@@ -1,6 +1,8 @@
 import time
 
-filenames = ["cantrbry/xargs.1", "cantrbry/fields.c"]
+from numpy import short
+
+filenames = ["cantrbry/xargs.1", "cantrbry/fields.c", "cantrbry/sum"]
 
 shortfilenames = ["cantrbry/alice29.txt", "cantrbry/asyoulik.txt", "cantrbry/cp.html", "cantrbry/fields.c", "cantrbry/grammar.lsp", "cantrbry/kennedy.xls", "cantrbry/lcet10.txt",
                   "cantrbry/plrabn12.txt", "cantrbry/ptt5", "cantrbry/sum", "cantrbry/xargs.1"]
@@ -102,20 +104,31 @@ def LZ78_file(filename, list):
         if longest_match > 0:
             list.append((longest_match_index, data[index + longest_match]))
             index += longest_match + 1
+            
             #print("list: ", list)
         else:
             # Symbol does not exist in list => add new symbol
             list.append((0, data[index]))
             index += 1 # code next byte in data
+        
+        # check if list is too long then start over
+        if len(list) > 50:
+                list = [(0,None)]
 
     return list
 
 
+tic = time.time()
 
-for filename in filenames:
+for filename in bigfilenames:
     list = [(0, None)]
     start = time.time()
     code = LZ78_file(filename, list)
+    #print("Code", code, "length: ",len(code))
     end = time.time()
     print("Coding ", filename, " took ", end-start, " seconds!\n")
     #print(code)
+
+tac = time.time()
+
+print("Total time: ", tac-tic, " seconds!")
