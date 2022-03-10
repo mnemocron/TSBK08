@@ -1,7 +1,10 @@
+from doctest import FAIL_FAST
+from logging import raiseExceptions
 import time
 
 
 filenames = ["compressed.txt"]
+
 
 def read_file(filename):
     # Load bytes from file and count symbol occurances
@@ -9,18 +12,30 @@ def read_file(filename):
         data = f.read()
         return data
 
+
 def LZ78_decoder(filename):
 
     #code = read_file(filename)
-    code = [(0,None),(0,"a"),(0,"b"),(1,"b"),(3,"c"),(4,"d")]
+    code = [(0, None), (0, "a"), (0, "b"), (1, "b"), (3, "c"), (4, "d"),
+            (0, False), (0, None), (0, "a"), (0, "b"), (1, "b"), (3, "c"), (4, "d")]
     decoded = []
 
-    for index_symbol in code:
+    i = 0
+    while i <= len(code)-1:
+        index_symbol = code[i]
         if index_symbol[0] == 0:
-            if index_symbol[1]: # not False or None
+            if index_symbol[1]:  # not False or None
                 decoded.append(index_symbol[1])
+                i += 1
+            elif index_symbol[1] == None:  
+                i += 1
+            elif index_symbol[1] == False:   # clear code and start over
+                code = code[i+1:]
+                i = 0
+            else:
+                raise Exception("Should not be able to be here!")
+
         else:
-            index = 0
             symbols = [index_symbol[1]]
             next_index_symbol = code[index_symbol[0]]
             while next_index_symbol[0] != 0:
@@ -31,7 +46,9 @@ def LZ78_decoder(filename):
             # add symbols to decoded
             for symbol in symbols:
                 decoded.append(symbol)
-    
+
+            i += 1
+
     print("decoded: ", decoded)
 
 
