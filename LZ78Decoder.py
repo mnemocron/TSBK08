@@ -54,6 +54,7 @@ def LZ78_decoder(filename):
 
 
 filename = "cantrbry/alice29.txt" #"cantrbry/test.txt"
+#filename = "test.txt"
 
 start = time.time()
 
@@ -70,6 +71,10 @@ tic = time.time()
 decoded = LZ78_decoder(code)
 tec = time.time()
 
+decoded = bytes(decoded)
+orig = read_file(filename)
+
+#%%
 for i in range(0,200):
     print(chr(decoded[i]), end="")
 

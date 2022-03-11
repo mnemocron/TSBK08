@@ -90,6 +90,8 @@ def LZ78_file(filename, list):
                         if byte_chain[j][1] == data[index+j]:
                             currentmatch_length += 1
                             currentmatch_index = byte_chain[j][0]
+                        else:
+                            break
                     else:
                         break # do not code more bytes than in data
                 
@@ -113,9 +115,10 @@ def LZ78_file(filename, list):
             index += 1 # code next byte in data
         
         # check if list is too long then start over
-        if len(list) > 50:
+        """
+        if len(list) > 100000:
             code += list
-            list = [(0,None)]
+            list = [(0,None)]"""
     
     code += list
     return code
@@ -124,6 +127,7 @@ def LZ78_file(filename, list):
 if __name__ == "__main__":
 
     tic = time.time()
+    filenames = ["test.txt"]
 
     for filename in filenames:
         list = [(0, None)]
