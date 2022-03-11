@@ -77,5 +77,10 @@ orig = read_file(filename)
 #%%
 for i in range(0,200):
     print(chr(decoded[i]), end="")
+    
+#%%
+for i in range(len(orig)):
+    if(orig[i] != decoded[i]):
+        print(decoded[i])
 
 print("\nDecoding took ", tec-tic, " seconds")

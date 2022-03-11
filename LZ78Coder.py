@@ -115,10 +115,11 @@ def LZ78_file(filename, list):
             index += 1 # code next byte in data
         
         # check if list is too long then start over
-        """
-        if len(list) > 100000:
+        
+        if len(list) > 50:
             code += list
-            list = [(0,None)]"""
+            code += [(0,False)]
+            list = [(0,None)]
     
     code += list
     return code
