@@ -1,9 +1,8 @@
-from doctest import FAIL_FAST
-from logging import raiseExceptions
+from base64 import decode
+from symtable import Symbol
 import time
 
-
-filenames = ["compressed.txt"]
+from LZ78Coder import LZ78_file
 
 
 def read_file(filename):
@@ -19,6 +18,8 @@ def LZ78_decoder(filename):
     code = [(0, None), (0, "a"), (0, "b"), (1, "b"), (3, "c"), (4, "d"),
             (0, False), (0, None), (0, "a"), (0, "b"), (1, "b"), (3, "c"), (4, "d")]
     decoded = []
+
+    code = filename
 
     i = 0
     while i <= len(code)-1:
@@ -49,11 +50,27 @@ def LZ78_decoder(filename):
 
             i += 1
 
-    print("decoded: ", decoded)
+    return decoded
 
+
+filename = "cantrbry/alice29.txt" #"cantrbry/test.txt"
+
+start = time.time()
+
+list = [(0, None)]
+code = LZ78_file(filename, list)
+
+end = time.time()
+
+
+print(code[15:25], "\n")
+print("Coding ", filename, " took ", end-start, " seconds!\n")
 
 tic = time.time()
-LZ78_decoder("filename")
+decoded = LZ78_decoder(code)
 tec = time.time()
 
-print("Decoding took ", tec-tic, " seconds")
+for i in range(0,200):
+    print(chr(decoded[i]), end="")
+
+print("\nDecoding took ", tec-tic, " seconds")

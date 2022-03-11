@@ -2,7 +2,7 @@ import time
 
 from numpy import short
 
-filenames = ["cantrbry/xargs.1", "cantrbry/fields.c", "cantrbry/sum"]
+filenames = ["cantrbry/test.txt"] #, "cantrbry/fields.c", "cantrbry/sum"]
 
 shortfilenames = ["cantrbry/alice29.txt", "cantrbry/asyoulik.txt", "cantrbry/cp.html", "cantrbry/fields.c", "cantrbry/grammar.lsp", "cantrbry/kennedy.xls", "cantrbry/lcet10.txt",
                   "cantrbry/plrabn12.txt", "cantrbry/ptt5", "cantrbry/sum", "cantrbry/xargs.1"]
@@ -14,7 +14,7 @@ def read_file(filename):
         data = f.read()
         return data
 
-def get_byte_sequence_from_element_in_list(i):
+def get_byte_sequence_from_element_in_list(i, list):
     # returns a list of the sequence that an index in list refers to
     byte_chain = []
     while list[list[i][0]][1] != None:
@@ -28,7 +28,7 @@ def get_byte_sequence_from_element_in_list(i):
 
 
 
-def get_first_symbol_from_element_in_list(i):
+def get_first_symbol_from_element_in_list(i, list):
     # returns the first symbol that an element in list refers to
     while(list[i][1] != None):
         if list[list[i][0]][1] == None: # get byte before None byte
@@ -51,6 +51,7 @@ def LZ78_file(filename, list):
     data = read_file(filename)
     datasize = len(data)
     index = 0   # indexing for bytes in data
+    code = []
     print("Coding: ", filename, " with ", datasize, " bytes!\n")
 
     while True:
@@ -70,7 +71,7 @@ def LZ78_file(filename, list):
             # Ex: (0,a),(0,b),(1,a) which is abba
             # but when reading list[2][1] is will give "a" but list[2][1] is actually ba
             
-            list_byte = get_first_symbol_from_element_in_list(i)
+            list_byte = get_first_symbol_from_element_in_list(i, list)
 
             if(list_byte == data_byte):
                 ### Match!!!
@@ -78,7 +79,7 @@ def LZ78_file(filename, list):
                 # Need to look at the deepest byte ex: (1,b) need to look at byte at 1 before b and so on until None is the byte
 
                 # add first match to start of byte_chain
-                byte_chain = get_byte_sequence_from_element_in_list(i)
+                byte_chain = get_byte_sequence_from_element_in_list(i, list)
 
                 # Calculate how many bytes in data that match with list
                 currentmatch_length = 0
@@ -113,22 +114,26 @@ def LZ78_file(filename, list):
         
         # check if list is too long then start over
         if len(list) > 50:
-                list = [(0,None)]
+            code += list
+            list = [(0,None)]
+    
+    code += list
+    return code
 
-    return list
 
+if __name__ == "__main__":
 
-tic = time.time()
+    tic = time.time()
 
-for filename in bigfilenames:
-    list = [(0, None)]
-    start = time.time()
-    code = LZ78_file(filename, list)
-    #print("Code", code, "length: ",len(code))
-    end = time.time()
-    print("Coding ", filename, " took ", end-start, " seconds!\n")
-    #print(code)
+    for filename in filenames:
+        list = [(0, None)]
+        start = time.time()
+        code = LZ78_file(filename, list)
+        #print("Code", code, "length: ",len(code))
+        end = time.time()
+        print("Coding ", filename, " took ", end-start, " seconds!\n")
+        print("Code: ", code)
 
-tac = time.time()
+    tac = time.time()
 
-print("Total time: ", tac-tic, " seconds!")
+    print("Total time: ", tac-tic, " seconds!")
