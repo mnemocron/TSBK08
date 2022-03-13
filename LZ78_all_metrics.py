@@ -101,7 +101,7 @@ for filename in files:
     # = 6 bits for match length + 8 bits for next symbol
     maxdepth = max(code,key=itemgetter(0))[0]
     dict_bits = math.ceil(math.log2(maxdepth))
-    outfilesize = (dict_bits + 8) * len(list) / 8
+    outfilesize = (dict_bits + 8) * len(code) / 8
     metric_ratio = outfilesize/os.path.getsize(filename)
         
     metric_md5ok = 0
