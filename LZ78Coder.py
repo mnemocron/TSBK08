@@ -116,7 +116,7 @@ def LZ78_file(filename, list):
         
         # check if list is too long then start over
         
-        if len(list) > 50:
+        if len(list) > 1000:
             code += list
             code += [(0,False)]
             list = [(0,None)]
