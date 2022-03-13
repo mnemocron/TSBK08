@@ -103,6 +103,7 @@ for filename in files:
     dict_bits = math.ceil(math.log2(maxdepth))
     outfilesize = (dict_bits + 8) * len(code) / 8
     metric_ratio = outfilesize/os.path.getsize(filename)
+    print(dict_bits)
         
     metric_md5ok = 0
     hash_original = md5(filename)
