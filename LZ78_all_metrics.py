@@ -54,8 +54,9 @@ def LZ78_decoder(filename, code):
 
             symbols.reverse()   # more efficient than repeatedly using symbols.insert()
             # add symbols to decoded
-            for symbol in symbols:
-                decoded.append(symbol)
+            #for symbol in symbols:
+            #    decoded.append(symbol)
+            decoded.extend(symbols)
 
             i += 1
 
