@@ -8,6 +8,8 @@ shortfilenames = ["cantrbry/alice29.txt", "cantrbry/asyoulik.txt", "cantrbry/cp.
                   "cantrbry/plrabn12.txt", "cantrbry/ptt5", "cantrbry/sum", "cantrbry/xargs.1"]
 bigfilenames = ["large/bible.txt", "large/E.coli", "large/world192.txt"]
 
+MAX_HISTORY_LENGHT = 1022
+
 def read_file(filename):
     # Load bytes from file and count symbol occurances
     with open(filename, "rb") as f:  # 'rb' means read binary
@@ -116,10 +118,11 @@ def LZ78_file(filename, list):
         
         # check if list is too long then start over
         
-        if len(list) > 1000:
+        if len(list) > MAX_HISTORY_LENGHT:
             code += list
             code += [(0,False)]
             list = [(0,None)]
+            print(f'enc {filename} @ {index}')
     
     code += list
     return code

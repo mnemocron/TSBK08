@@ -26,14 +26,8 @@ def read_file(filename):
         data = f.read()
         return data
 
-def LZ78_decoder(filename):
-    #code = read_file(filename)
-    code = [(0, None), (0, "a"), (0, "b"), (1, "b"), (3, "c"), (4, "d"),
-            (0, False), (0, None), (0, "a"), (0, "b"), (1, "b"), (3, "c"), (4, "d")]
+def LZ78_decoder(filename, code):
     decoded = []
-
-    code = filename
-
     i = 0
     while i <= len(code)-1:
         index_symbol = code[i]
@@ -46,8 +40,7 @@ def LZ78_decoder(filename):
             elif index_symbol[1] == False:   # clear code and start over
                 code = code[i+1:]
                 i = 0
-            else:
-                raise Exception("Should not be able to be here!")
+                print(f'dec {filename} @ {len(decoded)}')
 
         else:
             symbols = [index_symbol[1]]
@@ -77,6 +70,7 @@ outfile = './temp.lz78'
 decompfile = './decomp.dat'
 
 files = smallfilenames + bigfilenames
+files = smallfilenames[0:1]
 
 for filename in files:
     #filename = smallfilenames[1]
@@ -90,7 +84,7 @@ for filename in files:
     metric_time_encode = toc-tic
     ### DECOMPRESS THE FILE #######################################################
     tic = time.time()
-    decoded = LZ78_decoder(code)
+    decoded = LZ78_decoder(filename, code)
     decoded = bytes(decoded)
     with open(decompfile, 'wb') as f:
         f.write(decoded)
