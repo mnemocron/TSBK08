@@ -46,10 +46,13 @@ def LZ78_decoder(filename, code):
             symbols = [index_symbol[1]]
             next_index_symbol = code[index_symbol[0]]
             while next_index_symbol[0] != 0:
-                symbols.insert(0, next_index_symbol[1])
+                #symbols.insert(0, next_index_symbol[1])
+                symbols.append(next_index_symbol[1])
                 next_index_symbol = code[next_index_symbol[0]]
-            symbols.insert(0, next_index_symbol[1])
+            #symbols.insert(0, next_index_symbol[1])
+            symbols.append(next_index_symbol[1])
 
+            symbols.reverse()   # more efficient than repeatedly using symbols.insert()
             # add symbols to decoded
             for symbol in symbols:
                 decoded.append(symbol)
@@ -70,7 +73,8 @@ outfile = './temp.lz78'
 decompfile = './decomp.dat'
 
 files = smallfilenames + bigfilenames
-files = smallfilenames[0:1]
+# files = smallfilenames[0:1]
+# files = smallfilenames[0:1]
 
 for filename in files:
     #filename = smallfilenames[1]
