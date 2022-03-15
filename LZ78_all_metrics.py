@@ -20,43 +20,43 @@ smallfilenames = ["cantrbry/alice29.txt", "cantrbry/asyoulik.txt", "cantrbry/cp.
                   "cantrbry/plrabn12.txt", "cantrbry/ptt5", "cantrbry/sum", "cantrbry/xargs.1"]
 bigfilenames = ["large/bible.txt", "large/E.coli", "large/world192.txt"]
 
+BITS = 10
+
 def read_file(filename):
     # Load bytes from file and count symbol occurances
     with open(filename, "rb") as f:  # 'rb' means read binary
         data = f.read()
         return data
 
+
 def LZ78_decoder(filename, code):
+    datasize = len(code)
     decoded = []
     i = 0
     while i <= len(code)-1:
         index_symbol = code[i]
-        if index_symbol[0] == 0:
-            if index_symbol[1]:  # not False or None
+        if index_symbol[0] == 0 or index_symbol[0] == 2**BITS-1:
+            if index_symbol[1] != None :  # not None
                 decoded.append(index_symbol[1])
                 i += 1
-            elif index_symbol[1] == None:  
-                i += 1
-            elif index_symbol[1] == False:   # clear code and start over
+            elif index_symbol[0] == 2**BITS-1:   # clear code and start over
                 code = code[i+1:]
                 i = 0
                 print(f'dec {filename} @ {len(decoded)}')
+            elif index_symbol[1] == None:  
+                i += 1
 
         else:
             symbols = [index_symbol[1]]
             next_index_symbol = code[index_symbol[0]]
             while next_index_symbol[0] != 0:
-                #symbols.insert(0, next_index_symbol[1])
-                symbols.append(next_index_symbol[1])
+                symbols.insert(0, next_index_symbol[1])
                 next_index_symbol = code[next_index_symbol[0]]
-            #symbols.insert(0, next_index_symbol[1])
-            symbols.append(next_index_symbol[1])
+            symbols.insert(0, next_index_symbol[1])
 
-            symbols.reverse()   # more efficient than repeatedly using symbols.insert()
             # add symbols to decoded
-            #for symbol in symbols:
-            #    decoded.append(symbol)
-            decoded.extend(symbols)
+            for symbol in symbols:
+                decoded.append(symbol)
 
             i += 1
 
