@@ -121,7 +121,7 @@ def LZ78_file(filename, list):
         
         if len(list) > MAX_HISTORY_LENGHT-1:
             code += list
-            code += [(bin(MAX_HISTORY_LENGHT-1), None)]
+            code += [(MAX_HISTORY_LENGHT-1, None)]
             list = [(0,None)]
             print(f'enc {filename} @ {index} of {datasize}')
     

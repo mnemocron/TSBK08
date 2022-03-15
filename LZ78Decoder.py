@@ -21,12 +21,13 @@ def read_file(filename):
 
 
 def LZ78_decoder(filename, code):
+    datasize = len(code)
     decoded = []
     i = 0
     while i <= len(code)-1:
         index_symbol = code[i]
-        if index_symbol[0] == 0:
-            if index_symbol[1] :  # not None
+        if index_symbol[0] == 0 or index_symbol[0] == 2**BITS-1:
+            if index_symbol[1] != None :  # not None
                 decoded.append(index_symbol[1])
                 i += 1
             elif index_symbol[0] == 2**BITS-1:   # clear code and start over
@@ -53,33 +54,31 @@ def LZ78_decoder(filename, code):
     return decoded
 
 
-for filename in filenames:
+for filename in bigfilenames:
 
+    # Coding
     start = time.time()
-
     list = [(0, None)]
     code = LZ78_file(filename, list)
-
     end = time.time()
 
-
-    #print(code[15:25], "\n")
     print("Coding ", filename, " took ", end-start, " seconds!\n")
 
+    # Decoding
     tic = time.time()
     decoded = LZ78_decoder(filename, code)
     tec = time.time()
 
-    decoded = bytes(decoded)
-    orig = read_file(filename)
-
     #%%
-    for i in range(0,200):
+    nr_symbols = 500
+    print(f'\nFirst {nr_symbols} symbols is:\n\n')
+    
+    for i in range(0, nr_symbols):
         print(chr(decoded[i]), end="")
         
     #%%
-    for i in range(len(orig)):
-        if(orig[i] != decoded[i]):
-            print(decoded[i])
+    #for i in range(len(orig)):
+    #    if(orig[i] != decoded[i]):
+    #        print(decoded[i])
 
-    print("\nDecoding took ", tec-tic, " seconds")
+    print("\n\nDecoding took ", tec-tic, " seconds")
